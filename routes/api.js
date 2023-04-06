@@ -17,6 +17,15 @@ const parser = bodyParser.urlencoded({ extended: true });
 
 router.use(parser);
 
+
+router.get('/signup', (req, res) => {
+    console.log('hi lu')
+    res.render('signup');
+});
+router.get('/login', (req, res) => {
+    console.log('hi lu')
+    res.render('login');
+});
 router.post('/signup', async function (req, res) {
 
     if (!req.body.username || !req.body.password) {
@@ -38,7 +47,7 @@ router.post('/signin', async function (req, res) {
 
     console.log(req.body);
 
-    let user = await User.findOne({username: req.body.username});
+    let user = await User.findOne({ username: req.body.username });
 
     console.log(user);
 
@@ -51,7 +60,9 @@ router.post('/signin', async function (req, res) {
                 // if user is found and password is right create a token
                 var token = jwt.sign(user.toJSON(), config.secret);
                 // return the information including token as JSON
-                res.json({ success: true, token: 'JWT ' + token });
+                // res.json({ success: true, token: 'JWT ' + token });
+                res.cookie('jwt', token, { httpOnly: true});
+                res.status(200).json({ user: user._id });
             } else {
                 res.status(401).send({ success: false, msg: 'Authentication failed. Wrong password.' });
             }
